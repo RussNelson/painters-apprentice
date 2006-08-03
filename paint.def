@@ -1,0 +1,162 @@
+;Paintdef.asm  -  Macro and Structure Definitions
+;History:163,1
+;06-16-88 21:13:55 remove screen_seg.
+;01-02-88 16:05:42 create screen_bytes and screen_seg
+
+;constants
+screen_bytes	equ	80
+
+
+load2	macro	adr
+	mov	cx,adr.h
+	mov	dx,adr.v
+	endm
+
+load22	macro	adr
+	mov	si,adr.h
+	mov	di,adr.v
+	endm
+
+store2	macro	adr
+	mov	adr.h,cx
+	mov	adr.v,dx
+	endm
+
+store22	macro	adr
+	mov	adr.h,si
+	mov	adr.v,di
+	endm
+
+xchg2	macro	adr
+	xchg	adr.h,cx
+	xchg	adr.v,dx
+	endm
+
+xchg22	macro	adr
+	xchg	adr.h,si
+	xchg	adr.v,di
+	endm
+
+add2	macro	adr
+	add	cx,adr.h
+	add	dx,adr.v
+	endm
+
+add22	macro	adr
+	add	si,adr.h
+	add	di,adr.v
+	endm
+
+sub2	macro	adr
+	sub	cx,adr.h
+	sub	dx,adr.v
+	endm
+
+sub22	macro	adr
+	sub	si,adr.h
+	sub	di,adr.v
+	endm
+
+b_struc	struc
+b	db	?
+b_struc	ends
+
+w_struc	struc
+w	dw	?
+w_struc	ends
+
+point	struc
+h	dw	?
+v	dw	?
+point	ends
+
+rect	struc
+left	dw	?
+top	dw	?
+right	dw	?
+bot	dw	?
+rect	ends
+
+rect1		struc
+topleft		db	(size point) dup(?)
+botright	db	(size point) dup(?)
+rect1		ends
+
+bitmap	struc
+bounds	db	(size rect) dup(?)
+bytes	dw	?
+pntr	dd	?
+bitmap	ends
+
+bitmap_trailer	struc
+bytes1	dw	?
+pntr0	dw	?
+pntr1	dw	?
+bitmap_trailer	ends
+
+segoff	struc
+offs	dw	?
+segm	dw	?
+segoff	ends
+
+penState	struc
+pnLoc		db	(size point) dup(?)
+pnSize		db	(size point) dup(?)
+pnMode		dw	?
+penState	ends
+
+font_struc	struc
+ascent	dw	?			;number of pixels above base line
+descent	dw	?			;number of pixels below base line
+widMax	dw	?			;number of pixels wide
+leading	dw	?			;number of pixels below descent and above ascent
+font_struc	ends
+
+pulls_struc	struc
+pulls_disabled	db	?		;=1 if disabled, (=-1 if last menu).
+pulls_check	db	?		;<>0 if check mark desired.
+pulls_keybd	db	?		;keyboard equivalent (null if none)
+pulls_style	db	?		;style set.
+pulls_struc	ends
+
+BOLD_STYLE	equ	000001b
+ITALIC_STYLE	equ	000010b
+UNDERLINE_STYLE	equ	000100b
+OUTLINE_STYLE	equ	001000b
+SHADOW_STYLE	equ	010000b
+COMP_STYLE	equ	100000b
+
+pdi	macro	d,c,k,s,str
+	pulls_struc<d,c,k,s>
+	db	'&str',0
+	endm
+
+fcb_struc	struc
+fcb_drive	db	0
+fcb_fname	db	'        '
+fcb_ext		db	'   '
+fcb_curblk	dw	0
+fcb_recsz	dw	0
+fcb_filsz	dw	0,0
+fcb_date	dw	0
+fcb_time	dw	0
+fcb_res		db	8 dup (0)
+fcb_currec	db	0
+fcb_ranrec	dw	0,0
+fcb_struc	ends
+
+event_struc	struc
+event_type	db	?
+event_time	dw	?
+event_pt	dw	?,?
+event_button	db	?
+event_mods	db	?
+event_struc	ends
+
+black_on_white	equ	1
+
+BAR_UPARROW	equ	0
+BAR_PGUP	equ	1
+BAR_THUMB	equ	2
+BAR_PGDN	equ	3
+BAR_DOWNARROW	equ	4
